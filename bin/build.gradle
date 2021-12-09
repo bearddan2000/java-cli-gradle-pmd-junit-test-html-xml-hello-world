@@ -1,0 +1,50 @@
+plugins {
+    // we don’t need to *apply* the plugin to the root project, do we?
+    id 'pmd'
+}
+plugins {
+    // we don’t need to *apply* the plugin to the root project, do we?
+    id 'com.github.spotbugs' version '4.7.0' apply false
+}
+apply plugin: 'java'
+apply plugin: 'application'
+
+repositories {
+    mavenCentral()
+}
+
+test {
+    reports {
+        junitXml.enabled = true
+        html.enabled = true
+    }
+}
+
+dependencies {
+  testImplementation 'junit:junit:4.12'
+}
+
+mainClassName = 'example.Main'
+
+
+apply plugin: 'com.github.spotbugs'
+spotbugs {
+    toolVersion = '4.2.2'
+    reportsDir = file("$project.buildDir/reports/findbugs")
+}
+
+tasks.withType(com.github.spotbugs.snom.SpotBugsTask) {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
+// Configure PMD.
+pmd {
+    ignoreFailures = true
+    toolVersion = "6.23.0"                             // The version of PMD to use.
+    ruleSetFiles = files("config/pmd/pmd.xml")         // The location of the configuration file.
+    ruleSets = []                                      // Ignore the default rules. The ones this config
+                                                       // uses are set with the ruleSetFiles property.
+}
